@@ -1,7 +1,7 @@
 version: 1.1.0
 license: "MIT"
-description: led_control
-url: 
+description: led
+url: https://github.com/NingZiXi/led
 files:
   exclude:
   - .git
