@@ -37,6 +37,12 @@ void Led::init() {
         .hpoint = 0
     };
     ledc_channel_config(&ledc_channel);
+
+    // 使能渐变功能
+    esp_err_t ret = ledc_fade_func_install(0);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to install LEDC fade function: %s", esp_err_to_name(ret));
+    }
 }
 
 // 点亮LED
@@ -58,13 +64,23 @@ void Led::setBrightness(uint32_t duty) {
 }
 
 // 呼吸效果
-void Led::breath() {
-    for (int duty = 0; duty < 8192; duty += 100) {
-        setBrightness(duty);
-        vTaskDelay(30 / portTICK_PERIOD_MS);
-    }
-    for (int duty = 8192; duty > 0; duty -= 100) {
-        setBrightness(duty);
-        vTaskDelay(30 / portTICK_PERIOD_MS);
-    }
+void Led::breath(uint32_t fade_time_ms) {
+    // 从 0 渐变到最大亮度
+    ledc_set_fade_with_time(m_mode, m_channel, 8191, fade_time_ms);
+    ledc_fade_start(m_mode, m_channel, LEDC_FADE_NO_WAIT);
+
+    // 等待渐变完成
+    vTaskDelay(pdMS_TO_TICKS(fade_time_ms));
+
+    // 从最大亮度渐变到 0
+    ledc_set_fade_with_time(m_mode, m_channel, 0, fade_time_ms);
+    ledc_fade_start(m_mode, m_channel, LEDC_FADE_NO_WAIT);
+
+    // 等待渐变完成
+    vTaskDelay(pdMS_TO_TICKS(fade_time_ms));
+}
+
+// 停止渐变
+void Led::stopBreath() {
+    ledc_stop(m_mode, m_channel, 0); // 停止渐变
 }

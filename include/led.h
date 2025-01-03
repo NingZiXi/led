@@ -21,7 +21,9 @@ public:
     // 设置LED亮度
     void setBrightness(uint32_t duty);
     // 呼吸效果
-    void breath();
+    void breath(uint32_t fade_time_ms);
+    // 停止呼吸效果
+    void stopBreath();
 
 private:
     gpio_num_t m_pin;
@@ -32,8 +34,9 @@ private:
     uint32_t m_frequency;
 };
 
-#endif // LED_H
-
 #ifdef __cplusplus
 }
 #endif
+
+#endif // LED_H
+

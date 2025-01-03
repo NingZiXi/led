@@ -74,8 +74,7 @@ void app_main() {
     myLed.init();
 
     while (1) {
-        myLed.breath();  // 开始呼吸效果
-        vTaskDelay(5000 / portTICK_PERIOD_MS);  // 延迟 5 秒
+        myLed.breath(2000);  // 开始呼吸效果
     }
 }
 ```
